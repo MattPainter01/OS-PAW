@@ -45,13 +45,15 @@ class WFS_API:
                                      allow_premium=False,
                                      srs='EPSG:4326', 
                                      output_format='geojson',
-                                     max_feature_count=1000):
+                                     max_feature_count=1000,
+                                     filter=None):
         request_params = self._create_request_params(type_name=type_name, 
                                                 bbox=bbox,
                                                 allow_premium=allow_premium,
                                                 output_format=output_format,
                                                 srs=srs,
-                                                start_index=0)
+                                                start_index=0,
+                                                filter=filter)
         index_count = count(1, self._MAX_FEATURES_PER_REQUEST)
 
         all_features = []
@@ -74,9 +76,9 @@ class WFS_API:
         return FeatureCollection(all_features, crs=srs)
 
 
-
     def _create_request_params(self, allow_premium, type_name, bbox, 
-                               output_format, srs='EPSG:4326', start_index=0):
+                               output_format, srs='EPSG:4326', start_index=0,
+                               filter=None):
         validate_request_params(api_service=self._SERVICE,
                                 type_name=type_name,
                                 bbox=bbox,
@@ -95,7 +97,14 @@ class WFS_API:
             'bbox': bbox,
             'count': self._MAX_FEATURES_PER_REQUEST
         }
-        return request_params
+
+        if filter is not None:
+            request_params['filter'] = filter
+
+        # Returning a manually formatted string rather than a dict because requests.get(..., params=request_params)
+        # seems to escape the colon characters which are required in the filter string.
+        # We can get around this by passing params as a string to requests.get
+        return "&".join(f"{k}={v}" for k, v in request_params.items())
 
 
 

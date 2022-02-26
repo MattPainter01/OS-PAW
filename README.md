@@ -65,14 +65,29 @@ The former means no premium data requests will be made and the latter means the 
 
 The APIs currently accept two Spatial Reference Systems, namely British National Grid (`'EPSG:27700'`) and World Geodetic System 1984 (`'EPSG:4326'`). 
 
+## Filtering
+A valid OGC XML filter string can be provided so that results can be filtered. 
+
+```python 
+# Replace [YOUR PROPERTY NAME] and [YOUR PROPERTY VALUE] with your chosen values
+filter_string = (r'<ogc:Filter>'
+                      r'<ogc:PropertyIsEqualTo>'
+                          r'<ogc:PropertyName>[YOUR PROPERTY NAME]</ogc:PropertyName>'
+                          r'<ogc:Literal>[YOUR PROPERTY VALUE]</ogc:Literal>'
+                      r'</ogc:PropertyIsEqualTo>'
+                 r'</ogc:Filter>')
+
+wfs_api = WFS_API(api_key=API_KEY)
+payload = wfs_api.get_all_features_within_bbox(..., filter=filter_string)
+```
+
+See the [specification](https://osdatahub.os.uk/docs/wfs/technicalSpecification) and the [tutorial](https://labs.os.uk/public/os-data-hub-tutorials/data-science/price-paid-spatial-distribution) for more information on filter strings. 
+
 ## Tests
 There are currently some limited tests of the functionality of the `WFS_API` object. To check that these tests pass, open a command prompt and navigate to the installation of OS-PAW, then run `pytest` from the command line. 
 
 ## Limitations
-Currently (12/11/2020), there is only a python wrapper for the Web Feature Service (WFS) API. If there is sufficient interest, we shall add similar functionality for the other APIs available on the [OS Data Hub](https://osdatahub.os.uk/products). 
-
-It is currently not possible to filter the results before returning the payload. For example, to return all of the schools within a bounding box, it is first necessary to return all of the buildings and then filter the resulting GeoJSON payload using your preferred method. If pre-filtering is integral to your project, you may wish to refer to the [tutorial](https://labs.os.uk/public/os-data-hub-tutorials/data-science/price-paid-spatial-distribution) on using the raw API, or submit an issue to this project, or feel free to contribute extra functionality yourself.
-
+Currently (12/11/2020), there is only a python wrapper for the Web Feature Service (WFS) API. If there is sufficient interest, we shall add similar functionality for the other APIs available on the [OS Data Hub](https://osdatahub.os.uk/products).
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
